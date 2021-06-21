@@ -2,16 +2,22 @@ import "./App.scss";
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "react-three-fiber";
 import { DirectionalLight } from "three";
-
+import { MeshWobbleMaterial } from "../node_modules/drei/MeshWobbleMaterial";
+import { OrbitControls } from "../node_modules/drei/OrbitControls";
 //
-const Box = ({ position, args, color }) => {
+const Box = ({ position, args, color, speed }) => {
   const mesh = useRef(null);
 
   useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01));
   return (
     <mesh castShadow position={position} ref={mesh}>
       <boxBufferGeometry attach="geometry" args={args} />
-      <meshStandardMaterial attach="material" color={color} />
+      <MeshWobbleMaterial
+        attach="material"
+        color={color}
+        speed={speed}
+        factor={0.5}
+      />
     </mesh>
   );
 };
@@ -52,12 +58,30 @@ function App() {
           </mesh>
         </group>
 
-        <Box position={[0, 1, 0]} args={[1, 1, 1]} color="lightblue" />
-        <Box position={[-2, 3, 1]} args={[3, 2, 1]} color="pink" />
-        <Box position={[1, 3, 2]} args={[3, 3, 2]} color="purple" />
+        <directionalLight
+          castShadow
+          position={[0, 10, 0]}
+          intensity={1.5}
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+        />
+
+        <Box
+          position={[5, -3, -2]}
+          args={[1, 5, 1]}
+          color="lightblue"
+          speed={0.5}
+        />
+        <Box position={[-7, 5, 2]} args={[3, 3, 3]} color="pink" speed={0.25} />
+        <Box position={[3, 1, 2]} args={[1, 5, 1]} color="purple" speed={1} />
+        <OrbitControls />
       </Canvas>
     </>
   );
 }
-
 export default App;
